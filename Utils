@@ -1,0 +1,59 @@
+   static Properties config = new Properties();
+    static FileInputStream fis;
+
+    public WebDriver InitialiseWebDriver() {
+
+        System.setProperty("webdriver.chrome.args", "--disable-logging");
+        System.setProperty("webdriver.chrome.silentOutput", "true");
+
+        initialiseBrowser();
+        driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
+        driver.manage().window().maximize();
+        return driver;
+
+    }
+
+
+
+public  WebDriver initialiseBrowser() {
+
+
+        switch (System.getProperty("browserType")) {
+            case "Firefox":
+                WebDriverManager.firefoxdriver().setup();
+                driver = new FirefoxDriver();
+                break;
+            case "Chrome":
+                WebDriverManager.chromedriver().setup();
+                driver = new ChromeDriver();
+                break;
+            case "Edge":
+                WebDriverManager.edgedriver().setup();
+                driver = new EdgeDriver();
+                break;
+            default:
+                WebDriverManager.chromedriver().setup();
+                driver = new ChromeDriver();
+
+        }
+        return driver;
+    }
+
+    public static String getPropertyData(String getData) throws IOException {
+        String path = new File("src/main/java/Config/webUi.properties").getAbsolutePath();
+        fis = new FileInputStream(path);
+        config.load(fis);
+        String setData = config.getProperty(getData);
+        return setData;
+    }
+
+    public void getEnvironmentURL() throws Exception {
+
+        System.out.println("URL::::" + System.getProperty("Env"));
+        String sEnvironmentStack = System.getProperty("Env");
+        if (sEnvironmentStack.equalsIgnoreCase("stage")) {
+            driver.get(getPropertyData("hpsmartstageURL"));
+        } else if (sEnvironmentStack.equalsIgnoreCase("pie")) {
+            driver.get(getPropertyData("hpsmartpieURL"));
+        }
+    }
